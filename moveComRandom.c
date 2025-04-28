@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <math.h>
 
 typedef struct{
     int **gradeFront;
@@ -11,19 +12,6 @@ typedef struct{
     int i;
     int j;
 } Posicao;
-
-
-/* struct celula {
-    int fisica;
-    double real;
-}
-typedef struct celula celula;
-
-
-celula matrix[20][30]; */
-
-
-
 
 void init_grade(int linhas, int colunas, Grade *grade){
     
@@ -81,6 +69,7 @@ void logica(int linhas, int colunas, Grade *grade, Posicao *pos){
             vizinhos_j[n] = vizinho_j;
             vectPeso[n] = (*grade).gradeBack[vizinho_i][vizinho_j];
             sum += vectPeso[n++];
+
         }
     }
 
@@ -105,29 +94,32 @@ void logica(int linhas, int colunas, Grade *grade, Posicao *pos){
     pos->j = novo_j;
 }
 
-void printGrade(int linhas, int colunas, Grade grade){
+void printGrade(int linhas, int colunas, Grade grade, Posicao pos){
     system("cls");
     for(int i = 0; i < linhas; i++){
         for(int j = 0; j < colunas; j++){
-            if(grade.gradeFront[i][j] == 1){
-                printf("%c ", 254);
+            int distancia = abs(pos.i - i) + abs(pos.j - j);
+
+            double intensidadeVerde = (distancia / (double)(linhas + colunas));
+            
+            if(grade.gradeFront[i][j] == 2){
+                printf(" ");
             }
-            else if(grade.gradeFront[i][j] == 2){
-                printf("\033[31m%c\033[m ", 254);
-            }
-            else if (grade.gradeFront[i][j] == 0){
-                printf("%c ", 255);
+            else if(intensidadeVerde > 0.0){
+                int verde_intensidade = (int)(intensidadeVerde * 255);  
+                printf("\033[48;2;0;%d;0m \033[m", verde_intensidade);  
             }
         }
         printf("\n");
     }
-    Sleep(300);
+    Sleep(200);
 }
+
 
 void decrementa(int linhas, int colunas, Grade *grade){
     for(int i = 0; i < linhas; i++){
         for(int j = 0; j < colunas; j++){
-           (*grade).gradeBack[i][j] -= 0.4;
+           (*grade).gradeBack[i][j] -= 0.2;
         }
     }
 }
@@ -147,7 +139,7 @@ int main(){
     init_grade(linhas, colunas, &grade);
     localizaPosicao(linhas, colunas, grade, &pos);
     for(int i = 0; i < ciclos; i++){
-        printGrade(linhas, colunas, grade);
+        printGrade(linhas, colunas, grade, pos);
         logica(linhas, colunas, &grade, &pos);
         decrementa(linhas, colunas, &grade);
     }
