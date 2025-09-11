@@ -20,4 +20,4 @@ void init_map(int rows, int columns, Map *grade);
 void robotsMap(int quantity, int rows, int columns, Map *map);
 void robotMove(int rows, int columns, Map *grade);
 void viewMap(int rows, int columns, Map grade);
-void pheromone_evaporate(int rows, int columns, Map *grade, int percentage);
+void pheromone_evaporate(int rows, int columns, Map *grade, int percentage, double beta);

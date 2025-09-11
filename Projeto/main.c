@@ -7,6 +7,7 @@ int main(){
     Map grade;
     Position pos;
     int rows, columns, ciclos, quantityRobots, percentage = 20;
+    double totalSumDeposition;
 
     printf("Rows: ");
     scanf("%d%*c", &rows);
@@ -21,9 +22,10 @@ int main(){
     robotsMap(quantityRobots, rows, columns, &grade);
     
     for(int i = 0; i < ciclos; i++){
+        totalSumDeposition = 0;
         viewMap(rows, columns, grade);
         robotMove(rows, columns, &grade);
-        pheromone_evaporate(rows, columns, &grade, percentage);
+        pheromone_evaporate(rows, columns, &grade, percentage, 0.005, totalSumDeposition);
     }
 
     return 0;
