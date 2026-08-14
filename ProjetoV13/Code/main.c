@@ -46,11 +46,11 @@ int main()
         // view_pheromone_robot_map(rows, columns, &robots[1], pool);
         // view_pheromone_robot_map(rows, columns, &robots[2], pool);
         
-        view_real_robot_map(rows, columns, &robots[0], pool);
-        view_real_robot_map(rows, columns, &robots[1], pool);
-        view_real_robot_map(rows, columns, &robots[2], pool);
+        //view_real_robot_map(rows, columns, &robots[0], pool);
+        //view_real_robot_map(rows, columns, &robots[1], pool);
+        //view_real_robot_map(rows, columns, &robots[2], pool);
 
-        //view_all_robot_real_map(rows, columns, quantityRobots, robots, pool);
+        view_all_robot_real_map(rows, columns, quantityRobots, robots, pool);
 
         for(int i = 1; i <= quantityRobots; i++){
             robot_move(rows, columns, &robots[i-1], pool, i, &realMap);

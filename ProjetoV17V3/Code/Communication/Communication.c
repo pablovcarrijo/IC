@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include <math.h>
 #include <time.h>
 #include "Communication.h"
@@ -38,8 +37,8 @@ int com_setDetectionRadius(Robot *robot, int detectionRadius)
 int com_setIdRobotLink(Robot *robot, int id)
 {
     Robot_link *aux;
-    if ((robot != NULL) && (id != NULL))
-    {
+
+    if (robot != NULL && id >= 0){
         aux = robot->link_list;
         if (aux->id != -1)
         {
@@ -161,61 +160,63 @@ int com_WriteOnPool(Robot *robot, Pool *pool, int rows, int columns)
 */
 int com_ReadPool(Robot *robot, Pool *pool)
 {
+    if (robot == NULL || pool == NULL)
+    {
+        return 0;
+    }
 
     Message *aux;
-    long int aux_ts;
     int peer_position[2];
     int current_position[2];
+
     current_position[0] = robot->pos.x;
     current_position[1] = robot->pos.y;
-    if ((robot != NULL) && (pool != NULL))
+
+    for (aux = pool->msgs; aux != NULL; aux = aux->prox)
     {
-        for (aux = pool->msgs; aux != NULL; aux = aux->prox)
+        if (aux->idRobot == robot->id)
         {
-            if (aux->idRobot == robot->id)
-            {
-                continue;
-            }
+            continue;
+        }
 
-            peer_position[0] = aux->pos.x;
-            peer_position[1] = aux->pos.y;
+        peer_position[0] = aux->pos.x;
+        peer_position[1] = aux->pos.y;
 
-            if (com_inDetectionRange(robot, current_position, peer_position) &&
-                com_verifyRobotLink(robot, aux->idRobot, aux->time_stamp))
+        if (com_inDetectionRange(robot, current_position, peer_position) &&
+            com_verifyRobotLink(robot, aux->idRobot, aux->time_stamp))
+        {
+            for (int k = 0; k < aux->pathMemory.size; k++)
             {
-                printf("robot %d catch\n", robot->id);
-                Sleep(1000);
-                for (int k = 0; k < aux->pathMemory.size; k++)
+                int index = (aux->pathMemory.front + k) % aux->pathMemory.capacity;
+
+                Cell c = aux->pathMemory.cells[index];
+
+                robot->pheromoneGrade[c.pos.x][c.pos.y].pheromoneValue =
+                    fmax(robot->pheromoneGrade[c.pos.x][c.pos.y].pheromoneValue,
+                         c.pheromoneValue);
+
+                if (robot->mapRobot[c.pos.x][c.pos.y] != CELL_ROBOT)
                 {
-                    int index = (aux->pathMemory.front + k) % aux->pathMemory.capacity;
-
-                    Cell c = aux->pathMemory.cells[index];
-
-                    robot->pheromoneGrade[c.pos.x][c.pos.y].pheromoneValue =
-                        fmax(robot->pheromoneGrade[c.pos.x][c.pos.y].pheromoneValue,
-                             c.pheromoneValue);
-
-                    if (robot->mapRobot[c.pos.x][c.pos.y] != CELL_ROBOT)
+                    if (c.mapValue == CELL_UNKNOWN)
                     {
-                        if(c.mapValue == CELL_UNKNOWN){
-                            continue;
-                        }
-                        if (c.mapValue == CELL_ROBOT)
-                        {
-                            robot->mapRobot[c.pos.x][c.pos.y] = CELL_VISITED;
-                        }
-                        else
-                        {
-                            robot->mapRobot[c.pos.x][c.pos.y] = c.mapValue;
-                        }
+                        continue;
+                    }
+
+                    if (c.mapValue == CELL_ROBOT)
+                    {
+                        robot->mapRobot[c.pos.x][c.pos.y] = CELL_VISITED;
+                    }
+                    else
+                    {
+                        robot->mapRobot[c.pos.x][c.pos.y] = c.mapValue;
                     }
                 }
             }
         }
-        com_computeLinkHush(robot);
-        return 1;
     }
-    return 0;
+
+    com_computeLinkHush(robot);
+    return 1;
 }
 
 // Checks if robot has a space in the pool
@@ -261,12 +262,12 @@ int com_poolNewCommunication(Robot *robot, Pool *pool)
     node->time_stamp = 0;
     node->prox = NULL;
 
-    node->pathMemory.capacity = QUEUE_MAX;
+    node->pathMemory.capacity = MEMORY_QUEUE_MAX;
     node->pathMemory.size = 0;
     node->pathMemory.front = 0;
     node->pathMemory.tail = -1;
 
-    node->pathMemory.cells = (Cell *)malloc(QUEUE_MAX * sizeof(Cell));
+    node->pathMemory.cells = (Cell *)malloc(MEMORY_QUEUE_MAX * sizeof(Cell));
 
     if (node->pathMemory.cells == NULL)
     {
@@ -357,3 +358,4 @@ void print_queue(CellQueue *q)
                q->cells[index].pheromoneValue);
     }
 }
+
