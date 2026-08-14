@@ -1,0 +1,1 @@
+.\raylib\w64devkit\bin\gcc.exe main.c Map\loadMap.c Map\render.c Robot\Robot.c -o program.exe -I.\raylib\raylib\src -L.\raylib\raylib\src -lraylib -lopengl32 -lgdi32 -lwinmm
