@@ -1,0 +1,6 @@
+experimento=1;semente=1;ciclo_0=5.294118%;ciclo_10=21.568627%;ciclo_100pct=nao_atingiu
+experimento=2;semente=2;ciclo_0=11.372549%;ciclo_10=24.901961%;ciclo_100pct=nao_atingiu
+experimento=3;semente=3;ciclo_0=8.039216%;ciclo_10=23.921569%;ciclo_100pct=nao_atingiu
+experimento=1;semente=1;ciclo_0=5.294118%;ciclo_10=21.568627%;ciclo_100pct=nao_atingiu
+experimento=2;semente=2;ciclo_0=11.372549%;ciclo_10=24.901961%;ciclo_100pct=nao_atingiu
+experimento=3;semente=3;ciclo_0=8.039216%;ciclo_10=23.921569%;ciclo_100pct=nao_atingiu
